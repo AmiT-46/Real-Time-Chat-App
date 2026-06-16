@@ -59,36 +59,53 @@ const signup = async (req, res) => {
     }
 }
 
-const signin = async (req, res) => {
+const login = async (req, res) => {
 
-    const { userName, password } = req.body;
+    try {
+        const { username, password } = req.body;
 
-    try{
+        // 1. Check if the user exists in the database
+        const user = await User.findOne({ username });
+
+        // 2. Check if the password is correct (using bcrypt.compare)
+        // We use user?.password to prevent the app from crashing if 'user' is null
+        const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
+
+        if (!user || !isPasswordCorrect) {
+            return res.status(400).json({ error: "Invalid username or password" });
+        }
+
+        // 3. Generate the token and set it as a cookie
+        generateTokenAndSetCookie(user._id, res);
+
+        // 4. Send back the user data (excluding the password)
         res.status(200).json({
-            message : "signin route hit successfully",
-            userName,
-            password,
-        })
-    }catch(error){
-        console.log("error in signin controller", error.message);
-        res.status(500).json({error: "Internal Server Error"})
+            _id: user._id,
+            fullName: user.fullName,
+            username: user.username,
+            profilePic: user.profilePic
+        });
+
+    } catch (error) {
+        console.log("Error in login controller", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
 const logout = async (req, res) => {
-    try{
-        res.status(200).json({
-            message : "logout route hit successfully"
-        })
-    }catch(error){
-        console.log("error in logout controller", error.message);
-        res.status(500).status({error : "Internal Server Error"})
+    try {
+        // Clear the cookie by setting its maxAge to 0
+        res.cookie("jwt", "", { maxAge: 0 });
+        res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+        console.log("Error in logout controller", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
 
 module.exports = {
     signup,
-    signin,
+    login,
     logout
 }
