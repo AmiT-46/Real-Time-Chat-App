@@ -1,6 +1,8 @@
 const Conversation = require('../models/conversation.model');
 const Message = require('../models/message.model');
 
+const { getReceiverSocketId, io } = require('../socket/socket');
+
 const sendMessage = async (req, res) => {
     try {
         const { message } = req.body;
@@ -34,7 +36,11 @@ const sendMessage = async (req, res) => {
         // 5. Save both to the database simultaneously (Promise.all is faster than awaiting them one by one)
         await Promise.all([conversation.save(), newMessage.save()]);
 
-        // TODO: SOCKET.IO FUNCTIONALITY WILL GO HERE LATER
+        // TODO: SOCKET.IO FUNCTIONALITY WILL GO HERE LATER -> Done
+        if (receiverSocketId) {
+            // io.to(<socket_id>).emit() is used to send events to a SPECIFIC client
+            io.to(receiverSocketId).emit("newMessage", newMessage);
+        }
 
         res.status(201).json(newMessage);
 

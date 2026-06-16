@@ -2,10 +2,10 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const express = require('express');
-const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 
-const app = express();
+const { app, server } = require('./socket/socket.js');
+
 const PORT = process.env.PORT || 3000;
 
 const authRouter = require('./routes/auth.routes.js');
@@ -27,7 +27,7 @@ app.get('/api/health', (req, res)=>{
     })
 })
 
-app.listen(PORT, ()=>{
+server.listen(PORT, ()=>{
     connectToMongoDB();
     console.log("Server is running on port 3000");
 });
