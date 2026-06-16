@@ -17,7 +17,7 @@ app.use(cookieParser());
 
 
 app.use('/api/auth', authRouter);
-app.use('api/messages', messageRoutes);
+app.use('/api/messages', messageRoutes);
 
 app.get('/api/health', (req, res)=>{
     res.status(200).json({
