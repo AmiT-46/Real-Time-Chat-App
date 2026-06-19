@@ -1,4 +1,5 @@
 import Sidebar from "../../components/sidebar/Sidebar";
+import MessageContainer from "../../components/messages/MessageContainer";
 
 const Home = () => {
     return (
@@ -8,10 +9,8 @@ const Home = () => {
             {/* The Sidebar we just built */}
             <Sidebar />
 
-            {/* Temporary placeholder for the Message box we will build next */}
-            <div className="flex flex-col items-center justify-center w-[400px] md:w-[500px] h-full text-gray-300 bg-gray-900 bg-opacity-40">
-                <p className="text-xl font-bold">Select a chat to start messaging</p>
-            </div>
+           {/* 2. Swap out the old div with your new component */}
+            <MessageContainer />
 
         </div>
     );

@@ -22,7 +22,7 @@ const Sidebar = () => {
             <div className='divider px-3 mb-4 border-b border-gray-600'></div>
 
             {/* User List */}
-            <div className='flex-1 overflow-auto'>
+            <div className='flex-1 overflow-auto no-scrollbar'>
                 {conversations.map((conversation) => (
                     <Conversation 
                         key={conversation._id} 

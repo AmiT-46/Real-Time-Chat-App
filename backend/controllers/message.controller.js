@@ -37,6 +37,7 @@ const sendMessage = async (req, res) => {
         await Promise.all([conversation.save(), newMessage.save()]);
 
         // TODO: SOCKET.IO FUNCTIONALITY WILL GO HERE LATER -> Done
+        const receiverSocketId = getReceiverSocketId(receiverId);
         if (receiverSocketId) {
             // io.to(<socket_id>).emit() is used to send events to a SPECIFIC client
             io.to(receiverSocketId).emit("newMessage", newMessage);
