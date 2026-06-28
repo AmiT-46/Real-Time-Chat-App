@@ -73,4 +73,32 @@ const getMessages = async (req, res) => {
     }
 };
 
-module.exports = { sendMessage, getMessages };
+const clearMessages = async (req, res) => {
+    try {
+        const { id: userToChatId } = req.params;
+        const senderId = req.user._id;
+
+        // Find the conversation
+        const conversation = await Conversation.findOne({
+            participants: { $all: [senderId, userToChatId] },
+        });
+
+        if (!conversation) {
+            return res.status(200).json({ message: "Chat is already empty" });
+        }
+
+        // Delete all actual message documents that belong to this conversation
+        await Message.deleteMany({ _id: { $in: conversation.messages } });
+
+        // Empty the messages array in the conversation document
+        conversation.messages = [];
+        await conversation.save();
+
+        res.status(200).json({ message: "Chat cleared successfully" });
+    } catch (error) {
+        console.log("Error in clearMessages controller: ", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+module.exports = { sendMessage, getMessages, clearMessages };
