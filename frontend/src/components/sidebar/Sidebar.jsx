@@ -2,10 +2,14 @@ import { useState } from "react"; // 1. Import useState
 import useGetConversations from "../../hooks/useGetConversations";
 import useLogout from "../../hooks/useLogout";
 import Conversation from "./Conversation";
+import { FiUser } from "react-icons/fi";
+import ProfileModal from "../profile/ProfileModal";
 
 const Sidebar = () => {
     const { loading, conversations } = useGetConversations();
     const { logout } = useLogout();
+
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     // 2. Create state to hold the search query
     const [search, setSearch] = useState("");
@@ -18,6 +22,17 @@ const Sidebar = () => {
 
     return (
         <div className='w-80 p-4 flex flex-col h-full theme-sidebar'>
+
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-xl font-bold text-white tracking-wider">Chats</h1>
+                <button 
+                    onClick={() => setIsProfileOpen(true)}
+                    className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800"
+                    title="My Profile"
+                >
+                    <FiUser size={22} />
+                </button>
+            </div>
             
             {/* Search Bar */}
             <div className="mb-4">
@@ -55,15 +70,7 @@ const Sidebar = () => {
                 {loading ? <span className='text-gray-400 mx-auto mt-4 block text-center'>Loading users...</span> : null}
             </div>
 
-            {/* Logout Button */}
-            <div className='mt-auto pt-4'>
-                <button 
-                    onClick={logout} 
-                    className="text-red-500 hover:text-red-700 font-bold transition-colors"
-                >
-                    Logout
-                </button>
-            </div>
+            <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
         </div>
     );
 };
