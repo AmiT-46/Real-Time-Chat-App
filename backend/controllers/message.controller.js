@@ -101,4 +101,66 @@ const clearMessages = async (req, res) => {
     }
 };
 
-module.exports = { sendMessage, getMessages, clearMessages };
+// --- Delete Individual Message ---
+const deleteMessage = async (req, res) => {
+    try {
+        const messageId = req.params.id;
+        const senderId = req.user._id;
+
+        const message = await Message.findById(messageId);
+        if (!message) return res.status(404).json({ error: "Message not found" });
+
+        // Security: Only the person who sent the message can delete it
+        if (message.senderId.toString() !== senderId.toString()) {
+            return res.status(401).json({ error: "Unauthorized to delete this message" });
+        }
+
+        // "Soft Delete": Change the text just like WhatsApp
+        message.message = "🚫 This message was deleted";
+        await message.save();
+
+        // Socket.IO: Tell the receiver the message was deleted instantly
+        const receiverSocketId = getReceiverSocketId(message.receiverId);
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("messageUpdated", message);
+        }
+
+        res.status(200).json(message);
+    } catch (error) {
+        console.log("Error in deleteMessage controller: ", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// --- Edit Individual Message ---
+const editMessage = async (req, res) => {
+    try {
+        const messageId = req.params.id;
+        const senderId = req.user._id;
+        const { newText } = req.body; // The updated text sent from React
+
+        const message = await Message.findById(messageId);
+        if (!message) return res.status(404).json({ error: "Message not found" });
+
+        // Security: Only the person who sent the message can edit it
+        if (message.senderId.toString() !== senderId.toString()) {
+            return res.status(401).json({ error: "Unauthorized to edit this message" });
+        }
+
+        message.message = newText;
+        await message.save();
+
+        // Socket.IO: Tell the receiver the message was edited instantly
+        const receiverSocketId = getReceiverSocketId(message.receiverId);
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("messageUpdated", message);
+        }
+
+        res.status(200).json(message);
+    } catch (error) {
+        console.log("Error in editMessage controller: ", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+module.exports = { sendMessage, getMessages, clearMessages, deleteMessage, editMessage };

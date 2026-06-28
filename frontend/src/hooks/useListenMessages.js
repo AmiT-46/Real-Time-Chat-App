@@ -4,7 +4,7 @@ import useConversation from "../zustand/useConversation";
 
 const useListenMessages = () => {
     const { socket } = useSocketContext();
-    const { messages, setMessages } = useConversation();
+    const { messages, setMessages, updateMessage } = useConversation();
 
     useEffect(() => {
         // If there's no active socket connection, do nothing
@@ -16,9 +16,17 @@ const useListenMessages = () => {
             setMessages([...messages, newMessage]);
         });
 
+        // NEW: Listen for edited or deleted messages
+        socket.on("messageUpdated", (updatedMessage) => {
+            updateMessage(updatedMessage);
+        });
+
         // Cleanup function: Stop listening when the component unmounts to prevent multiple listeners
-        return () => socket.off("newMessage");
-    }, [socket, setMessages, messages]);
+        return () => {
+            socket.off("newMessage");
+            socket.off("messageUpdated");
+        };
+    }, [socket, setMessages, messages, updateMessage]);
 };
 
 export default useListenMessages;

@@ -8,6 +8,12 @@ const useConversation = create((set) => ({
     // Keeps track of the chat history for the selected user
     messages: [],
     setMessages: (messages) => set({ messages }),
+
+    updateMessage: (updatedMessage) => set((state) => ({
+        messages: state.messages.map((msg) => 
+            msg._id === updatedMessage._id ? updatedMessage : msg
+        )
+    })),
 }));
 
 export default useConversation;
