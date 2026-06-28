@@ -10,8 +10,8 @@ const Message = ({ message }) => {
     const fromMe = message.senderId === authUser._id;
     
     // Dynamic Tailwind classes based on who sent it
-    const alignmentClass = fromMe ? 'justify-end' : 'justify-start';
-    const bubbleBgColor = fromMe ? 'bg-blue-500' : 'bg-gray-700';
+    const alignmentClass = fromMe ? 'flex justify-end' : 'flex justify-start';
+    const bubbleBgColor = fromMe ? 'bubble-sent' : 'bubble-received';
     // const profilePic = fromMe ? authUser.profilePic : selectedConversation?.profilePic;
     
     // Extract the correct initial based on who sent the message

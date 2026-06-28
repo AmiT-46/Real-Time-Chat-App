@@ -4,26 +4,22 @@ import Messages from "./Messages";
 import { TiMessages } from "react-icons/ti"; 
 
 const MessageContainer = () => {
-    // Grab the currently selected user from our global state
     const { selectedConversation } = useConversation();
 
     return (
-        <div className='w-[400px] md:min-w-[500px] flex flex-col h-full bg-gray-900 bg-opacity-40'>
+        // Replaced hardcoded widths with `flex-1`
+        <div className='flex-1 flex flex-col h-full theme-chat-area'>
             {!selectedConversation ? (
                 <NoChatSelected />
             ) : (
                 <>
-                    {/* Header showing who we are messaging */}
-                    <div className='bg-slate-700 px-4 py-2 mb-2 flex items-center gap-2'>
-                        <span className='label-text text-gray-300'>To:</span>
-                        <span className='text-white font-bold'>{selectedConversation.fullName}</span>
+                    {/* Header */}
+                    <div className='px-6 py-4 mb-2 flex items-center gap-3 theme-header'>
+                        <span className='label-text text-gray-400'>To:</span>
+                        <span className='text-white font-bold text-lg'>{selectedConversation.fullName}</span>
                     </div>
 
-                    {/* Messages List (Placeholder for now) */}
-                    {/* 2. Swap the old placeholder div with your new <Messages /> component! */}
                     <Messages />
-
-                    {/* The Input Box we just built */}
                     <MessageInput />
                 </>
             )}

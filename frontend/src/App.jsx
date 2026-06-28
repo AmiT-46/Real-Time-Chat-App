@@ -10,7 +10,7 @@ function App() {
   const { authUser } = useAuthStore();
 
   return (
-    <div className='p-4 h-screen flex items-center justify-center bg-gray-900'>
+    <div className='h-screen w-screen flex text-gray-200'>
       <Routes>
         {/* If there is an authUser, show Home. If NOT, bounce them to /login */}
         <Route path='/' element={authUser ? <Home /> : <Navigate to='/login' />} />
